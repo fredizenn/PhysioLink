@@ -1,0 +1,64 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+# Keep uv.lock committed: it is the lockfile
+
+# ---------- Environment / secrets ----------
+.env
+.env.*
+!.env.example
+
+# ---------- Node / SvelteKit (web/) ----------
+node_modules/
+.svelte-kit/
+web/build/
+.pnpm-store/
+npm-debug.log*
+pnpm-debug.log*
+# Keep pnpm-lock.yaml committed
+
+# ---------- Firmware (firmware/) ----------
+.pio/
+firmware/**/build/
+*.hex
+*.uf2
+*.elf
+
+# ---------- Data, recordings, models ----------
+# Raw data lives in Postgres or local exports, never in git
+data/
+recordings/
+exports/
+*.parquet
+*.csv.gz
+ml/artifacts/
+ml/models/
+*.pkl
+*.joblib
+*.pt
+# Public datasets are downloaded by script, not committed
+datasets/
+
+# ---------- Notebooks ----------
+.ipynb_checkpoints/
+
+# ---------- Gateway disk buffer ----------
+gateway/buffer/
+
+# ---------- Editors / OS ----------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
