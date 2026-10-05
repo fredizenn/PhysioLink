@@ -1,0 +1,50 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # A throwaway Postgres that runs next to this job, only for this run.
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_USER: physiolink
+          POSTGRES_PASSWORD: physiolink
+          POSTGRES_DB: physiolink
+        ports: ["5432:5432"]
+        # Don't start the steps until Postgres actually accepts connections.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # .env is git-ignored, so CI gets the URL from here instead.
+    env:
+      DATABASE_URL: postgresql+asyncpg://physiolink:physiolink@localhost:5432/physiolink
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install all workspace packages
+        run: uv sync --all-packages --locked
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Tests
+        run: uv run pytest
+
+      - name: Migrations apply from empty and roll back cleanly
+        working-directory: api
+        run: |
+          uv run alembic upgrade head
+          uv run alembic downgrade base
+          uv run alembic upgrade head
